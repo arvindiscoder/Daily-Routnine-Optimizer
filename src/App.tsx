@@ -7,10 +7,12 @@ import {
   Timer, 
   LineChart, 
   BookOpen,
-  Volume2
+  Volume2,
+  Download,
+  CheckSquare
 } from 'lucide-react';
 
-import { Habit, Task, ScheduleBlock, RoutineTemplate, TabType } from './types';
+import { Habit, Task, ScheduleBlock, RoutineTemplate, TabType, IdentityCheck } from './types';
 import { SoundSynth } from './lib/synth';
 
 // Subcomponents
@@ -25,6 +27,12 @@ const DEFAULT_HABITS: Habit[] = [
   { id: 'h1', name: 'Morning Outdoor Sunlight', frequency: 'daily', category: 'Health', streak: 6, completedToday: true, color: 'text-amber-400 bg-amber-400/10' },
   { id: 'h2', name: 'Focus Session (90 Mins)', frequency: 'daily', category: 'Work', streak: 4, completedToday: false, color: 'text-blue-400 bg-blue-400/10' },
   { id: 'h3', name: 'Mindful Slow Breathing', frequency: 'daily', category: 'Mind', streak: 2, completedToday: false, color: 'text-emerald-400 bg-emerald-400/10' }
+];
+
+const DEFAULT_IDENTITIES: IdentityCheck[] = [
+  { id: 'i1', identityName: 'A Prolific Software Craftsman', provenToday: false, color: 'text-indigo-650 bg-indigo-50 border-indigo-200' },
+  { id: 'i2', identityName: 'An Athletic and Healthy Person', provenToday: true, color: 'text-amber-600 bg-amber-50 border-amber-200' },
+  { id: 'i3', identityName: 'A Fully Mindful Leader & Partner', provenToday: false, color: 'text-emerald-700 bg-emerald-50 border-emerald-200' }
 ];
 
 const DEFAULT_TASKS: Task[] = [
@@ -42,10 +50,42 @@ const DEFAULT_SCHEDULE: ScheduleBlock[] = [
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<TabType>('dashboard');
-  const [habits, setHabits] = useState<Habit[]>(DEFAULT_HABITS);
-  const [tasks, setTasks] = useState<Task[]>(DEFAULT_TASKS);
-  const [scheduleBlocks, setScheduleBlocks] = useState<ScheduleBlock[]>(DEFAULT_SCHEDULE);
+  const [habits, setHabits] = useState<Habit[]>(() => {
+    const saved = localStorage.getItem('aeroflow_habits');
+    return saved ? JSON.parse(saved) : DEFAULT_HABITS;
+  });
+  const [tasks, setTasks] = useState<Task[]>(() => {
+    const saved = localStorage.getItem('aeroflow_tasks');
+    return saved ? JSON.parse(saved) : DEFAULT_TASKS;
+  });
+  const [scheduleBlocks, setScheduleBlocks] = useState<ScheduleBlock[]>(() => {
+    const saved = localStorage.getItem('aeroflow_schedule');
+    return saved ? JSON.parse(saved) : DEFAULT_SCHEDULE;
+  });
+  const [identityChecks, setIdentityChecks] = useState<IdentityCheck[]>(() => {
+    const saved = localStorage.getItem('aeroflow_identities');
+    return saved ? JSON.parse(saved) : DEFAULT_IDENTITIES;
+  });
+
   const [toast, setToast] = useState<string | null>(null);
+  const [zipIsLoading, setZipIsLoading] = useState(false);
+
+  // Sync state to local storage
+  useEffect(() => {
+    localStorage.setItem('aeroflow_habits', JSON.stringify(habits));
+  }, [habits]);
+
+  useEffect(() => {
+    localStorage.setItem('aeroflow_tasks', JSON.stringify(tasks));
+  }, [tasks]);
+
+  useEffect(() => {
+    localStorage.setItem('aeroflow_schedule', JSON.stringify(scheduleBlocks));
+  }, [scheduleBlocks]);
+
+  useEffect(() => {
+    localStorage.setItem('aeroflow_identities', JSON.stringify(identityChecks));
+  }, [identityChecks]);
 
   // Focus pomodoro states
   const [timerMode, setTimerMode] = useState<'focus' | 'shortBreak' | 'longBreak'>('focus');
@@ -255,21 +295,94 @@ export default function App() {
     setCurrentTab('optimizer');
   };
 
+  // Identity Checks Operations
+  const toggleIdentityCheck = (id: string) => {
+    SoundSynth.playTick();
+    setIdentityChecks(prev => prev.map(item => {
+      if (item.id === id) {
+        const state = !item.provenToday;
+        if (state) SoundSynth.playSuccess();
+        return { ...item, provenToday: state };
+      }
+      return item;
+    }));
+  };
+
+  const handleAddIdentityCheck = (name: string, colorClassDefault?: string) => {
+    SoundSynth.playTick();
+    const colors = [
+      'text-indigo-650 bg-indigo-50 border-indigo-200',
+      'text-amber-600 bg-amber-50 border-amber-200',
+      'text-emerald-700 bg-emerald-50 border-emerald-200',
+      'text-rose-600 bg-rose-50 border-rose-200',
+    ];
+    const pickedColor = colorClassDefault || colors[Math.floor(Math.random() * colors.length)];
+    const newIden: IdentityCheck = {
+      id: 'i_' + Date.now(),
+      identityName: name,
+      provenToday: false,
+      color: pickedColor
+    };
+    setIdentityChecks(prev => [...prev, newIden]);
+    triggerToast("✨ Custom Identity Anchored!");
+  };
+
+  const handleDeleteIdentityCheck = (id: string) => {
+    SoundSynth.playTick();
+    setIdentityChecks(prev => prev.filter(item => item.id !== id));
+    triggerToast("Identity dismantled.");
+  };
+
+  const handleDownloadZip = async () => {
+    try {
+      setZipIsLoading(true);
+      triggerToast("📦 Packaging codebase into a ZIP... Please wait.");
+      
+      const response = await fetch("/api/download-zip");
+      if (!response.ok) {
+        throw new Error("HTTP error " + response.status);
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "AeroFlowPro-Project.zip";
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      a.remove();
+      
+      triggerToast("🚀 Download complete! Enjoy your code!");
+      SoundSynth.playSuccess();
+    } catch (error) {
+      console.error(error);
+      triggerToast("❌ Download failed. Try again.");
+      SoundSynth.playAlert();
+    } finally {
+      setZipIsLoading(false);
+    }
+  };
+
   // Sync Diagnostics Calculations
   const calculateSyncScore = (): number => {
-    let score = 50;
+    let score = 40;
     
     // Habits contribution matching (0-25 points)
     const habitDoneCount = habits.filter(h => h.completedToday).length;
-    score += (habitDoneCount / (habits.length || 1)) * 25;
+    score += (habitDoneCount / (habits.length || 1)) * 20;
 
-    // Routine diversity balance (0-25 points)
+    // Identities proven (0-20 points)
+    const identityDoneCount = identityChecks.filter(i => i.provenToday).length;
+    score += (identityDoneCount / (identityChecks.length || 1)) * 20;
+
+    // Routine diversity balance (0-20 points)
     const categories = new Set(scheduleBlocks.map(b => b.category));
-    score += categories.size * 8;
+    score += categories.size * 6;
 
-    // Completed Tasks contribution (0-25 points)
+    // Completed Tasks contribution (0-20 points)
     const doneTasks = tasks.filter(t => t.completed).length;
-    score += (doneTasks / (tasks.length || 1)) * 9;
+    score += (doneTasks / (tasks.length || 1)) * 10;
 
     return Math.min(100, Math.round(score));
   };
@@ -368,17 +481,29 @@ export default function App() {
         </div>
 
         {/* Dynamic audio Synthesizer sidebar footer card */}
-        <div className="p-4 bg-indigo-900 rounded-lg text-white shadow-md">
-          <p className="text-[10px] text-indigo-300 font-bold mb-1 uppercase tracking-wider">Dynamic Synthesizer</p>
-          <h4 className="text-sm font-bold mb-3 flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-emerald-450 animate-pulse"></span>
-            Sync Active
-          </h4>
+        <div className="p-4 bg-indigo-950 rounded-xl text-white shadow-md space-y-3.5">
+          <div>
+            <p className="text-[10px] text-indigo-300 font-bold mb-0.5 uppercase tracking-wider">Dynamic Engine</p>
+            <h4 className="text-[11px] font-bold flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              Workspace Active
+            </h4>
+          </div>
+          
           <button 
             onClick={() => { SoundSynth.playSuccess(); }}
-            className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-xs font-bold rounded transition-colors uppercase tracking-wider cursor-pointer"
+            className="w-full py-1.5 bg-indigo-900/60 hover:bg-indigo-900 border border-indigo-750/50 text-[10px] font-bold rounded transition-colors uppercase tracking-wider cursor-pointer"
           >
-            Test Sound Engine 🔊
+            Test Sound 🔊
+          </button>
+          
+          <button 
+            onClick={handleDownloadZip}
+            disabled={zipIsLoading}
+            className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-xs font-black rounded transition-colors uppercase tracking-wider cursor-pointer flex items-center justify-center gap-1.5 shadow shadow-indigo-900/30 text-white"
+          >
+            <Download className="w-4.5 h-4.5 text-white" />
+            <span>{zipIsLoading ? 'Zipping...' : 'Download Code ZIP'}</span>
           </button>
         </div>
       </aside>
@@ -400,6 +525,10 @@ export default function App() {
               timerMode={timerMode}
               toggleTimer={toggleTimer}
               setCurrentTab={setCurrentTab}
+              identityChecks={identityChecks}
+              toggleIdentityCheck={toggleIdentityCheck}
+              handleAddIdentityCheck={handleAddIdentityCheck}
+              handleDeleteIdentityCheck={handleDeleteIdentityCheck}
             />
           )}
 

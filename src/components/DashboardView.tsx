@@ -6,9 +6,12 @@ import {
   Play, 
   Pause, 
   Flame,
-  Calendar
+  Calendar,
+  UserCheck,
+  Plus,
+  Trash2
 } from 'lucide-react';
-import { Habit, Task, ScheduleBlock, TabType } from '../types';
+import { Habit, Task, ScheduleBlock, TabType, IdentityCheck } from '../types';
 
 interface DashboardViewProps {
   habits: Habit[];
@@ -23,6 +26,10 @@ interface DashboardViewProps {
   timerMode: 'focus' | 'shortBreak' | 'longBreak';
   toggleTimer: () => void;
   setCurrentTab: (tab: TabType) => void;
+  identityChecks: IdentityCheck[];
+  toggleIdentityCheck: (id: string) => void;
+  handleAddIdentityCheck: (name: string, color?: string) => void;
+  handleDeleteIdentityCheck: (id: string) => void;
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
@@ -37,8 +44,21 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   timerSeconds,
   timerMode,
   toggleTimer,
-  setCurrentTab
+  setCurrentTab,
+  identityChecks,
+  toggleIdentityCheck,
+  handleAddIdentityCheck,
+  handleDeleteIdentityCheck
 }) => {
+  const [newIdenName, setNewIdenName] = React.useState('');
+
+  const handleIdenSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newIdenName.trim()) return;
+    handleAddIdentityCheck(newIdenName.trim());
+    setNewIdenName('');
+  };
+
   const completedHabits = habits.filter(h => h.completedToday).length;
   const habitPct = habits.length ? Math.round((completedHabits / habits.length) * 100) : 0;
   const openTasks = tasks.filter(t => !t.completed);
@@ -180,6 +200,85 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             })}
           </div>
 
+          {/* Core Identity Alignment System */}
+          <div className="bg-white border border-slate-200 p-6 rounded-xl shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+              <div>
+                <h3 className="text-sm font-black text-slate-950 tracking-tight flex items-center gap-1.5">
+                  <UserCheck className="w-4 h-4 text-indigo-650" />
+                  Your Core Identities
+                </h3>
+                <p className="text-[10px] text-slate-500">Atomic habits align directly with chosen identities. Prove them with checkmarks.</p>
+              </div>
+              
+              {/* Inline identity creator form */}
+              <form onSubmit={handleIdenSubmit} className="flex gap-2 w-full sm:w-auto">
+                <input 
+                  type="text"
+                  placeholder="e.g., A Prolific Writer"
+                  value={newIdenName}
+                  onChange={(e) => setNewIdenName(e.target.value)}
+                  className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-indigo-600 focus:border-indigo-600 w-full sm:w-[160px]"
+                />
+                <button 
+                  type="submit"
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-2.5 flex items-center justify-center transition-colors cursor-pointer"
+                  title="Add Custom Identity"
+                >
+                  <Plus className="w-3.5 h-3.5 text-white" />
+                </button>
+              </form>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pb-1">
+              {identityChecks.map((iden) => (
+                <div 
+                  key={iden.id} 
+                  className={`flex items-center justify-between p-3.5 rounded-xl border transition-all ${
+                    iden.provenToday 
+                      ? 'bg-indigo-50/40 border-indigo-200/80 text-indigo-950' 
+                      : 'bg-slate-50/50 border-slate-100/80 hover:border-slate-200 text-slate-700'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <button 
+                      onClick={() => toggleIdentityCheck(iden.id)}
+                      className={`flex h-5 w-5 items-center justify-center rounded-full border transition-all cursor-pointer ${
+                        iden.provenToday 
+                          ? 'bg-indigo-600 border-indigo-600 text-white shadow-sm shadow-indigo-100' 
+                          : 'bg-white border-slate-200 hover:border-slate-350 text-transparent'
+                      }`}
+                    >
+                      <Check className="w-3 h-3 text-white" />
+                    </button>
+                    <div>
+                      <span className={`text-xs font-semibold block leading-tight ${iden.provenToday ? 'text-indigo-950 font-bold' : 'text-slate-700'}`}>
+                        {iden.identityName}
+                      </span>
+                      <span className="text-[9px] uppercase font-bold tracking-wider text-slate-405">
+                        {iden.provenToday ? '✨ Proven Today' : '⏳ Untracked'}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <button 
+                    onClick={() => handleDeleteIdentityCheck(iden.id)}
+                    className="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-white transition-all cursor-pointer"
+                    title="Remove Identity"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+              
+              {identityChecks.length === 0 && (
+                <div className="col-span-full text-center py-6">
+                  <p className="text-xs text-slate-400 font-medium">Verify your life patterns. Define a custom identity above!</p>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Active Day-Block Timeline Progression */}
           <div className="bg-white border border-slate-200 p-6 rounded-xl shadow-sm space-y-4">
             <div className="flex items-center justify-between">
@@ -264,7 +363,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
           {/* Habit quick checklist */}
           <div className="bg-white border border-slate-200 p-5 rounded-xl shadow-sm space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">Identity Checks</h3>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">Bio-Habit Sync Loop</h3>
             <div className="space-y-2">
               {habits.map((habit) => (
                 <div key={habit.id} className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-slate-100">

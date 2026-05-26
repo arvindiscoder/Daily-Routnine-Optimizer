@@ -28,6 +28,13 @@ export interface ScheduleBlock {
   desc: string;
 }
 
+export interface IdentityCheck {
+  id: string;
+  identityName: string; // e.g., "A Focused Developer"
+  provenToday: boolean;
+  color: string;
+}
+
 export interface RoutineTemplate {
   id: string;
   name: string;
