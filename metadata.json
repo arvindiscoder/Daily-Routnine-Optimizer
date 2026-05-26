@@ -1,0 +1,6 @@
+{
+  "name": "AeroFlow Pro",
+  "description": "Daily Routine Optimizer aligning biometrics with circadian rhythms, habit feedback loops, and pomodoro focus logs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

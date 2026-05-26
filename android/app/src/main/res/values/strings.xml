@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AeroFlowPro</string>
+    <string name="title_activity_main">AeroFlowPro</string>
+    <string name="package_name">com.aeroflow.pro</string>
+    <string name="custom_url_scheme">com.aeroflow.pro</string>
+</resources>
