@@ -8,8 +8,10 @@ import {
   LineChart, 
   BookOpen,
   Volume2,
-  Download,
-  CheckSquare
+  Terminal,
+  CheckSquare,
+  RotateCcw,
+  MessageSquare
 } from 'lucide-react';
 
 import { Habit, Task, ScheduleBlock, RoutineTemplate, TabType, IdentityCheck } from './types';
@@ -22,22 +24,23 @@ import { HabitsView } from './components/HabitsView';
 import { TasksView } from './components/TasksView';
 import { AnalyticsView } from './components/AnalyticsView';
 import { LibraryView } from './components/LibraryView';
+import { ChatView } from './components/ChatView';
 
 const DEFAULT_HABITS: Habit[] = [
-  { id: 'h1', name: 'Morning Outdoor Sunlight', frequency: 'daily', category: 'Health', streak: 6, completedToday: true, color: 'text-amber-400 bg-amber-400/10' },
-  { id: 'h2', name: 'Focus Session (90 Mins)', frequency: 'daily', category: 'Work', streak: 4, completedToday: false, color: 'text-blue-400 bg-blue-400/10' },
-  { id: 'h3', name: 'Mindful Slow Breathing', frequency: 'daily', category: 'Mind', streak: 2, completedToday: false, color: 'text-emerald-400 bg-emerald-400/10' }
+  { id: 'h1', name: 'Morning Outdoor Sunlight', frequency: 'daily', category: 'Health', streak: 0, completedToday: false, color: 'text-amber-400 bg-amber-400/10' },
+  { id: 'h2', name: 'Focus Session (90 Mins)', frequency: 'daily', category: 'Work', streak: 0, completedToday: false, color: 'text-blue-400 bg-blue-400/10' },
+  { id: 'h3', name: 'Mindful Slow Breathing', frequency: 'daily', category: 'Mind', streak: 0, completedToday: false, color: 'text-emerald-400 bg-emerald-400/10' }
 ];
 
 const DEFAULT_IDENTITIES: IdentityCheck[] = [
   { id: 'i1', identityName: 'A Prolific Software Craftsman', provenToday: false, color: 'text-indigo-650 bg-indigo-50 border-indigo-200' },
-  { id: 'i2', identityName: 'An Athletic and Healthy Person', provenToday: true, color: 'text-amber-600 bg-amber-50 border-amber-200' },
+  { id: 'i2', identityName: 'An Athletic and Healthy Person', provenToday: false, color: 'text-amber-600 bg-amber-50 border-amber-200' },
   { id: 'i3', identityName: 'A Fully Mindful Leader & Partner', provenToday: false, color: 'text-emerald-700 bg-emerald-50 border-emerald-200' }
 ];
 
 const DEFAULT_TASKS: Task[] = [
-  { id: 't1', text: 'Define Core Application State Maps', category: 'Work', completed: false, priority: 'High', pomodoros: 3, completedPomodoros: 1 },
-  { id: 't2', text: 'Perform Hydration Intake System Sweep', category: 'Health', completed: true, priority: 'Medium', pomodoros: 1, completedPomodoros: 1 },
+  { id: 't1', text: 'Define Core Application State Maps', category: 'Work', completed: false, priority: 'High', pomodoros: 3, completedPomodoros: 0 },
+  { id: 't2', text: 'Perform Hydration Intake System Sweep', category: 'Health', completed: false, priority: 'Medium', pomodoros: 1, completedPomodoros: 0 },
   { id: 't3', text: 'Cleanse Workspace Desk Layout', category: 'Mind', completed: false, priority: 'Low', pomodoros: 1, completedPomodoros: 0 }
 ];
 
@@ -51,19 +54,19 @@ const DEFAULT_SCHEDULE: ScheduleBlock[] = [
 export default function App() {
   const [currentTab, setCurrentTab] = useState<TabType>('dashboard');
   const [habits, setHabits] = useState<Habit[]>(() => {
-    const saved = localStorage.getItem('aeroflow_habits');
+    const saved = localStorage.getItem('aeroflow_habits_v4');
     return saved ? JSON.parse(saved) : DEFAULT_HABITS;
   });
   const [tasks, setTasks] = useState<Task[]>(() => {
-    const saved = localStorage.getItem('aeroflow_tasks');
+    const saved = localStorage.getItem('aeroflow_tasks_v4');
     return saved ? JSON.parse(saved) : DEFAULT_TASKS;
   });
   const [scheduleBlocks, setScheduleBlocks] = useState<ScheduleBlock[]>(() => {
-    const saved = localStorage.getItem('aeroflow_schedule');
+    const saved = localStorage.getItem('aeroflow_schedule_v4');
     return saved ? JSON.parse(saved) : DEFAULT_SCHEDULE;
   });
   const [identityChecks, setIdentityChecks] = useState<IdentityCheck[]>(() => {
-    const saved = localStorage.getItem('aeroflow_identities');
+    const saved = localStorage.getItem('aeroflow_identities_v4');
     return saved ? JSON.parse(saved) : DEFAULT_IDENTITIES;
   });
 
@@ -72,19 +75,19 @@ export default function App() {
 
   // Sync state to local storage
   useEffect(() => {
-    localStorage.setItem('aeroflow_habits', JSON.stringify(habits));
+    localStorage.setItem('aeroflow_habits_v4', JSON.stringify(habits));
   }, [habits]);
 
   useEffect(() => {
-    localStorage.setItem('aeroflow_tasks', JSON.stringify(tasks));
+    localStorage.setItem('aeroflow_tasks_v4', JSON.stringify(tasks));
   }, [tasks]);
 
   useEffect(() => {
-    localStorage.setItem('aeroflow_schedule', JSON.stringify(scheduleBlocks));
+    localStorage.setItem('aeroflow_schedule_v4', JSON.stringify(scheduleBlocks));
   }, [scheduleBlocks]);
 
   useEffect(() => {
-    localStorage.setItem('aeroflow_identities', JSON.stringify(identityChecks));
+    localStorage.setItem('aeroflow_identities_v4', JSON.stringify(identityChecks));
   }, [identityChecks]);
 
   // Focus pomodoro states
@@ -131,15 +134,14 @@ export default function App() {
 
   const handleTimerFinish = () => {
     setTimerActive(false);
-    SoundSynth.playAlert();
     if (timerMode === 'focus') {
+      SoundSynth.playSuccess();
       if (selectedTaskForTimer) {
         setTasks(prev => prev.map(t => {
           if (t.id === selectedTaskForTimer) {
             const nextVal = Math.min(t.pomodoros, t.completedPomodoros + 1);
             if (nextVal === t.pomodoros) {
               triggerToast(`🏆 Completed all Pomodoros for "${t.text}"!`);
-              SoundSynth.playSuccess();
               return { ...t, completedPomodoros: nextVal, completed: true };
             }
             return { ...t, completedPomodoros: nextVal };
@@ -151,6 +153,7 @@ export default function App() {
       setTimerMode('shortBreak');
       setTimerMinutes(5);
     } else {
+      SoundSynth.playAlert();
       triggerToast("⚡ Break finished! Re-enter your deep workspace.");
       setTimerMode('focus');
       setTimerMinutes(25);
@@ -334,9 +337,15 @@ export default function App() {
   };
 
   const handleDownloadZip = async () => {
+    const code = window.prompt("System Console: ");
+    if (code !== "arvind*12") {
+      SoundSynth.playTick();
+      return;
+    }
+
     try {
       setZipIsLoading(true);
-      triggerToast("📦 Packaging codebase into a ZIP... Please wait.");
+      triggerToast("📦 Synchronizing dependencies...");
       
       const response = await fetch("/api/download-zip");
       if (!response.ok) {
@@ -353,14 +362,40 @@ export default function App() {
       window.URL.revokeObjectURL(url);
       a.remove();
       
-      triggerToast("🚀 Download complete! Enjoy your code!");
+      triggerToast("🚀 Administration download synchronized.");
       SoundSynth.playSuccess();
     } catch (error) {
       console.error(error);
-      triggerToast("❌ Download failed. Try again.");
+      triggerToast("❌ Connection timed out.");
       SoundSynth.playAlert();
     } finally {
       setZipIsLoading(false);
+    }
+  };
+
+  const handleResetWorkspace = () => {
+    SoundSynth.playAlert();
+    if (window.confirm("Are you sure you want to reset all tracking progress, checked habits, proven identities, and completed tasks back to zero?")) {
+      // Reset Habits
+      setHabits(prev => prev.map(h => ({
+        ...h,
+        completedToday: false,
+        streak: 0
+      })));
+      // Reset Tasks
+      setTasks(prev => prev.map(t => ({
+        ...t,
+        completed: false,
+        completedPomodoros: 0
+      })));
+      // Reset Identities
+      setIdentityChecks(prev => prev.map(i => ({
+        ...i,
+        provenToday: false
+      })));
+      
+      triggerToast("🔄 System Workspace Reset to Zero!");
+      SoundSynth.playSuccess();
     }
   };
 
@@ -436,6 +471,37 @@ export default function App() {
         </div>
       )}
 
+      {/* Mobile Header Bar */}
+      <header className="lg:hidden flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 shrink-0">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 bg-indigo-600 rounded-sm flex items-center justify-center">
+            <div className="w-3 h-3 bg-white rotate-45"></div>
+          </div>
+          <span className="font-bold text-sm tracking-tight text-indigo-950">AeroFlow Pro</span>
+        </div>
+        
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={handleResetWorkspace}
+            className="flex items-center justify-center gap-1.5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-rose-600 hover:bg-rose-50 border border-rose-200/50 rounded-lg transition-colors cursor-pointer"
+            title="Reset Trackers"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Reset</span>
+          </button>
+          
+          <button 
+            onClick={handleDownloadZip}
+            disabled={zipIsLoading}
+            className="flex items-center justify-center gap-1.5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-indigo-600 hover:bg-indigo-50 border border-indigo-200/50 rounded-lg transition-colors cursor-pointer"
+            title="System Terminal"
+          >
+            <Terminal className="w-3.5 h-3.5" />
+            <span>admin</span>
+          </button>
+        </div>
+      </header>
+
       {/* Side Navigation Sidebar */}
       <aside className="hidden lg:flex flex-col justify-between border-r border-slate-200 bg-white p-6 lg:w-72 shrink-0">
         <div className="flex flex-col">
@@ -458,7 +524,8 @@ export default function App() {
               { id: 'habits', name: 'Habit Architect', icon: CheckCircle2 },
               { id: 'tasks', name: 'Task Hub & Pomo', icon: Timer },
               { id: 'analytics', name: 'Time & Sync Analytics', icon: LineChart },
-              { id: 'library', name: 'Routine Blueprints', icon: BookOpen }
+              { id: 'library', name: 'Routine Blueprints', icon: BookOpen },
+              { id: 'chat', name: 'AeroBot AI Assistant', icon: MessageSquare }
             ].map((item) => {
               const IconComp = item.icon;
               const isActive = currentTab === item.id;
@@ -500,16 +567,24 @@ export default function App() {
           <button 
             onClick={handleDownloadZip}
             disabled={zipIsLoading}
-            className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-xs font-black rounded transition-colors uppercase tracking-wider cursor-pointer flex items-center justify-center gap-1.5 shadow shadow-indigo-900/30 text-white"
+            className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-xs font-bold rounded-lg transition-colors uppercase tracking-wider cursor-pointer flex items-center justify-center gap-1.5 shadow shadow-indigo-900/30 text-white"
           >
-            <Download className="w-4.5 h-4.5 text-white" />
-            <span>{zipIsLoading ? 'Zipping...' : 'Download Code ZIP'}</span>
+            <Terminal className="w-4 h-4 text-white" />
+            <span>admin</span>
+          </button>
+
+          <button 
+            onClick={handleResetWorkspace}
+            className="w-full py-2 bg-rose-950 hover:bg-rose-900 border border-rose-800/40 text-rose-200 text-xs font-bold rounded-lg transition-colors uppercase tracking-wider cursor-pointer flex items-center justify-center gap-1.5 shadow"
+          >
+            <RotateCcw className="w-3.5 h-3.5 text-rose-300" />
+            <span>Reset Trackers ↻</span>
           </button>
         </div>
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto bg-slate-50 p-4 lg:p-8 pb-24 lg:pb-8">
+      <main className={`flex-1 overflow-y-auto bg-slate-50 pb-24 lg:pb-8 ${currentTab === 'chat' ? 'p-0' : 'p-4 lg:p-8'}`}>
         <div>
           {currentTab === 'dashboard' && (
             <DashboardView 
@@ -584,18 +659,28 @@ export default function App() {
               handleImportTemplate={handleImportTemplate}
             />
           )}
+
+          {currentTab === 'chat' && (
+            <ChatView  
+              habits={habits}
+              tasks={tasks}
+              scheduleBlocks={scheduleBlocks}
+              identityChecks={identityChecks}
+            />
+          )}
         </div>
       </main>
 
       {/* Mobile Tabbed Bottom bar */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-45 flex items-center justify-around border-t border-slate-200 bg-white/95 backdrop-blur px-2 py-3 shadow-lg">
+      <nav className="lg:hidden fixed bottom-5 left-4 right-4 z-45 flex items-center justify-around border border-slate-250/60 bg-white/95 backdrop-blur px-1.5 py-2.5 rounded-2xl shadow-xl">
         {[
           { id: 'dashboard', name: 'Home', icon: LayoutDashboard },
           { id: 'optimizer', name: 'Optimize', icon: Calendar },
           { id: 'habits', name: 'Habits', icon: CheckCircle2 },
           { id: 'tasks', name: 'Focus', icon: Timer },
           { id: 'analytics', name: 'Analytics', icon: LineChart },
-          { id: 'library', name: 'Templates', icon: BookOpen }
+          { id: 'library', name: 'Blueprints', icon: BookOpen },
+          { id: 'chat', name: 'AeroBot AI', icon: MessageSquare }
         ].map((item) => {
           const IconComp = item.icon;
           const isActive = currentTab === item.id;

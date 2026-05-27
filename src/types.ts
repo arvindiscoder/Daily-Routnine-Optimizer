@@ -43,4 +43,4 @@ export interface RoutineTemplate {
   blocks: Omit<ScheduleBlock, 'id'>[];
 }
 
-export type TabType = 'dashboard' | 'optimizer' | 'habits' | 'tasks' | 'analytics' | 'library';
+export type TabType = 'dashboard' | 'optimizer' | 'habits' | 'tasks' | 'analytics' | 'library' | 'chat';
