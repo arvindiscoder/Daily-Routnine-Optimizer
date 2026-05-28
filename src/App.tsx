@@ -16,6 +16,7 @@ import {
 
 import { Habit, Task, ScheduleBlock, RoutineTemplate, TabType, IdentityCheck } from './types';
 import { SoundSynth } from './lib/synth';
+import { getApiUrl } from './lib/api';
 
 // Subcomponents
 import { DashboardView } from './components/DashboardView';
@@ -347,7 +348,7 @@ export default function App() {
       setZipIsLoading(true);
       triggerToast("📦 Synchronizing dependencies...");
       
-      const response = await fetch("/api/download-zip");
+      const response = await fetch(getApiUrl("/api/download-zip"));
       if (!response.ok) {
         throw new Error("HTTP error " + response.status);
       }

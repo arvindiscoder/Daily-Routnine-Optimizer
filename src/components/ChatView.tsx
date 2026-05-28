@@ -14,6 +14,7 @@ import {
 import ReactMarkdown from 'react-markdown';
 import { Habit, Task, ScheduleBlock, IdentityCheck } from '../types';
 import { SoundSynth } from '../lib/synth';
+import { getApiUrl } from '../lib/api';
 
 interface ChatMessage {
   id: string;
@@ -144,7 +145,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
         text: m.text
       }));
 
-      const response = await fetch('/api/chat', {
+      const response = await fetch(getApiUrl('/api/chat'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
