@@ -15,6 +15,7 @@ import ReactMarkdown from 'react-markdown';
 import { Habit, Task, ScheduleBlock, IdentityCheck } from '../types';
 import { SoundSynth } from '../lib/synth';
 import { getApiUrl } from '../lib/api';
+import { runClientSideChat, GEMINI_API_KEY_CLIENT } from '../lib/gemini';
 
 interface ChatMessage {
   id: string;
@@ -145,29 +146,43 @@ export const ChatView: React.FC<ChatViewProps> = ({
         text: m.text
       }));
 
-      const response = await fetch(getApiUrl('/api/chat'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          messages: chatPayload,
-          context: systemContext
-        })
-      });
+      let replyText = "";
 
-      if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.error || `HTTP error ${response.status}`);
+      // Prioritize direct client-side execution if a client key is defined (e.g. for standalone Android builds)
+      const hasClientKey = GEMINI_API_KEY_CLIENT || 
+        ((import.meta as any).env?.VITE_GEMINI_API_KEY as string) || 
+        localStorage.getItem("GEMINI_API_KEY_CLIENT");
+
+      if (hasClientKey) {
+        console.log("Direct client-side Gemini execution requested...");
+        replyText = await runClientSideChat(chatPayload, systemContext);
+      } else {
+        console.log("Using backend API router for Gemini interaction...");
+        const response = await fetch(getApiUrl('/api/chat'), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            messages: chatPayload,
+            context: systemContext
+          })
+        });
+
+        if (!response.ok) {
+          const errData = await response.json();
+          throw new Error(errData.error || `HTTP error ${response.status}`);
+        }
+
+        const data = await response.json();
+        replyText = data.text;
       }
-
-      const data = await response.json();
       
       SoundSynth.playSuccess();
       const assistantMessage: ChatMessage = {
         id: 'msg-' + Date.now() + '-reply',
         role: 'assistant',
-        text: data.text,
+        text: replyText,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
 
