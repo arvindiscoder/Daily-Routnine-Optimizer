@@ -1,5 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 
+declare const __GEMINI_API_KEY__: string;
+
 /**
  * CLIENT SDK GEMINI KEY VARIABLE
  * =========================================================================
@@ -11,6 +13,19 @@ import { GoogleGenAI } from "@google/genai";
 export const GEMINI_API_KEY_CLIENT = ""; 
 
 /**
+ * Returns true if direct client-side Gemini execution is supported
+ * (either hardcoded, injected at build time, or saved in localStorage).
+ */
+export function hasDirectClientKey(): boolean {
+  return !!(
+    GEMINI_API_KEY_CLIENT ||
+    (typeof __GEMINI_API_KEY__ !== "undefined" && __GEMINI_API_KEY__) ||
+    ((import.meta as any).env?.VITE_GEMINI_API_KEY) ||
+    localStorage.getItem("GEMINI_API_KEY_CLIENT")
+  );
+}
+
+/**
  * Runs a Gemini Chat completion directly on the client.
  * Perfect for mobile builds (Capacitor/Android) and standalone browser demos.
  */
@@ -18,11 +33,16 @@ export async function runClientSideChat(
   messages: { role: string; text: string }[],
   context: any
 ): Promise<string> {
-  // Resolve key prioritising:
+  // Resolve key prioritizing:
   // 1. Hardcoded GEMINI_API_KEY_CLIENT variable above
-  // 2. import.meta.env.VITE_GEMINI_API_KEY from .env
-  // 3. LocalStorage fallback 'GEMINI_API_KEY_CLIENT'
+  // 2. Vite define-injected build-time __GEMINI_API_KEY__ variable 
+  // 3. import.meta.env.VITE_GEMINI_API_KEY from .env
+  // 4. LocalStorage fallback 'GEMINI_API_KEY_CLIENT'
   let apiKey = GEMINI_API_KEY_CLIENT;
+
+  if (!apiKey && typeof __GEMINI_API_KEY__ !== "undefined") {
+    apiKey = __GEMINI_API_KEY__;
+  }
 
   if (!apiKey) {
     apiKey = ((import.meta as any).env?.VITE_GEMINI_API_KEY as string) || "";

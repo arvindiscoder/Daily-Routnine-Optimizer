@@ -15,7 +15,7 @@ import ReactMarkdown from 'react-markdown';
 import { Habit, Task, ScheduleBlock, IdentityCheck } from '../types';
 import { SoundSynth } from '../lib/synth';
 import { getApiUrl } from '../lib/api';
-import { runClientSideChat, GEMINI_API_KEY_CLIENT } from '../lib/gemini';
+import { runClientSideChat, hasDirectClientKey } from '../lib/gemini';
 
 interface ChatMessage {
   id: string;
@@ -149,11 +149,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
       let replyText = "";
 
       // Prioritize direct client-side execution if a client key is defined (e.g. for standalone Android builds)
-      const hasClientKey = GEMINI_API_KEY_CLIENT || 
-        ((import.meta as any).env?.VITE_GEMINI_API_KEY as string) || 
-        localStorage.getItem("GEMINI_API_KEY_CLIENT");
-
-      if (hasClientKey) {
+      if (hasDirectClientKey()) {
         console.log("Direct client-side Gemini execution requested...");
         replyText = await runClientSideChat(chatPayload, systemContext);
       } else {
