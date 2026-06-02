@@ -73,6 +73,7 @@ export default function App() {
 
   const [toast, setToast] = useState<string | null>(null);
   const [zipIsLoading, setZipIsLoading] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(true);
 
   // Sync state to local storage
   useEffect(() => {
@@ -699,6 +700,66 @@ export default function App() {
           );
         })}
       </nav>
+
+      {/* Sleek, High-Contrast Greeting Modal */}
+      {showWelcome && (
+        <div id="welcome-popup" className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 backdrop-blur-md p-4 animate-fade-in">
+          <div className="w-full max-w-md bg-white border border-slate-100 rounded-2xl shadow-2xl overflow-hidden transform transition-all duration-300 scale-100 p-6 relative">
+            
+            {/* Top decorative gradient bar */}
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-amber-500" />
+            
+            {/* Close icon upper button */}
+            <button 
+              onClick={() => { SoundSynth.playTick(); setShowWelcome(false); }}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-lg hover:bg-slate-50 cursor-pointer"
+              title="Dismiss"
+            >
+              ✕
+            </button>
+
+            {/* Main Greeting Content */}
+            <div className="flex flex-col items-center text-center mt-3">
+              {/* Animated Sun & Sparkle Graphic badge */}
+              <div className="w-14 h-14 bg-indigo-50 rounded-full flex items-center justify-center mb-4 text-indigo-650 border border-indigo-100/50 shadow-inner">
+                <Sparkles className="w-7 h-7 text-indigo-650 animate-pulse" />
+              </div>
+
+              <h2 className="text-xl font-black text-slate-900 tracking-tight mb-2">
+                Hi there! Welcome to AeroFlow Pro 👋
+              </h2>
+              
+              <p className="text-xs text-slate-500 leading-relaxed max-w-sm mb-6">
+                Your biological routine architect is calibrated and live. Prepare to align systemic cellular clocks, defend cognitive workflow peaks, and secure your circadian lock with scientific precision.
+              </p>
+
+              {/* Minimal informative tags inside modal */}
+              <div className="w-full bg-slate-50 rounded-xl p-3 mb-6 border border-slate-150/50 text-left space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                  <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Circadian Lock Alignment</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                  <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">AeroBot AI Companion Live</span>
+                </div>
+              </div>
+
+              {/* Bottom positive action trigger button */}
+              <button
+                onClick={() => {
+                  SoundSynth.playSuccess();
+                  setShowWelcome(false);
+                }}
+                className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg hover:shadow-indigo-500/20 active:scale-98 cursor-pointer"
+              >
+                Let's Enter the Workspace
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
     </div>
   );
