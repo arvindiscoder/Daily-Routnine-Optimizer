@@ -88,12 +88,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       {/* Header bar */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-slate-900 tracking-tight">System Sphere</h2>
-          <p className="text-xs text-slate-500 mt-0.5">Biometric circadian alignment and flow state diagnostics.</p>
+          <h2 className="text-2xl font-black text-slate-900 tracking-tight">My Daily Dashboard</h2>
+          <p className="text-xs text-slate-500 mt-0.5">Keep track of your daily routine, habits, focus time, and goals.</p>
         </div>
         <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-100 px-3.5 py-1.5 rounded-xl self-start">
           <span className="h-2 w-2 rounded-full bg-indigo-600 animate-pulse"></span>
-          <span className="text-[10px] text-indigo-700 font-bold uppercase tracking-widest">Circadian Lock</span>
+          <span className="text-[10px] text-indigo-700 font-bold uppercase tracking-widest">Daily Sync</span>
         </div>
       </div>
 
@@ -102,9 +102,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         {/* KPI 1: Sync Score Gauge */}
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
           <div className="space-y-1">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Sync Rating</span>
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Flow Score</span>
             <span className={`text-3xl font-black block tracking-tight ${syncColorText}`}>{syncScore}%</span>
-            <span className="text-[10px] text-slate-500 block font-medium">Resilience balance</span>
+            <span className="text-[10px] text-slate-500 block font-medium">Daily balance score</span>
           </div>
           <div className="relative flex items-center justify-center">
             <svg className="w-14 h-14 transform -rotate-90">
@@ -127,9 +127,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         {/* KPI 2: Habit loop completion */}
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
           <div className="space-y-1">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Habit Sync</span>
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Habit Routine</span>
             <span className="text-3xl font-black text-indigo-600 block tracking-tight">{habitPct}%</span>
-            <span className="text-[10px] text-slate-500 block font-medium">{completedHabits} of {habits.length} resolved</span>
+            <span className="text-[10px] text-slate-500 block font-medium">{completedHabits} of {habits.length} done</span>
           </div>
           <div className="relative flex items-center justify-center">
             <svg className="w-14 h-14 transform -rotate-90">
@@ -152,9 +152,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         {/* KPI 3: Task count queue */}
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
           <div className="space-y-1">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Cognitive Queue</span>
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Tasks Left</span>
             <span className="text-3xl font-black text-blue-600 block tracking-tight">{openTasks.length}</span>
-            <span className="text-[10px] text-slate-500 block font-medium">Priority steps remaining</span>
+            <span className="text-[10px] text-slate-500 block font-medium">To-do steps remaining</span>
           </div>
           <div className="p-3 rounded-xl bg-blue-50 text-blue-600">
             <Clock className="w-6 h-6" />
@@ -164,9 +164,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         {/* KPI 4: Timeline items */}
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
           <div className="space-y-1">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Schedule Blocks</span>
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Planned Blocks</span>
             <span className="text-3xl font-black text-emerald-600 block tracking-tight">{scheduleBlocks.length}</span>
-            <span className="text-[10px] text-slate-500 block font-medium">Flow blocks mapped</span>
+            <span className="text-[10px] text-slate-500 block font-medium">Active routine intervals</span>
           </div>
           <div className="p-3 rounded-xl bg-emerald-50 text-emerald-600">
             <Calendar className="w-6 h-6" />
@@ -182,7 +182,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div className="bg-white border border-slate-200 p-5 rounded-xl shadow-sm space-y-3.5">
             <div className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-indigo-600" />
-              <h3 className="text-sm font-bold text-slate-800">Bio-Cognitive Optimization Engine</h3>
+              <h3 className="text-sm font-bold text-slate-800">Daily Routine Assistant</h3>
             </div>
             {suggestions.map((s, idx) => {
               // Convert dark classes to elegant light classes
@@ -208,7 +208,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   <UserCheck className="w-4 h-4 text-indigo-650" />
                   Your Core Identities
                 </h3>
-                <p className="text-[10px] text-slate-500">Atomic habits align directly with chosen identities. Prove them with checkmarks.</p>
+                <p className="text-[10px] text-slate-500">Connecting your habits to who you want to be helps them stick. Check off what you proved today!</p>
               </div>
               
               {/* Inline identity creator form */}

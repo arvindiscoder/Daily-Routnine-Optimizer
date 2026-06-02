@@ -9,24 +9,24 @@ interface LibraryViewProps {
 const ROUTINE_TEMPLATES: RoutineTemplate[] = [
   {
     id: 'tmpl1',
-    name: 'Andrew Huberman Morning',
-    desc: 'A scientific blueprint focused on optimizing cortisol timing, circadian cycles, and early day energy peaks.',
-    category: 'Circadian',
+    name: 'Morning Energy Boost',
+    desc: 'A simple morning routine designed to help you wake up naturally with sunshine, focus early, and refresh in the afternoon.',
+    category: 'Lifestyle',
     blocks: [
-      { title: 'Outside Sunlight Sync', startTime: '06:00', endTime: '06:15', category: 'Health', productivity: 'High', desc: 'Triggers morning cortisol release.' },
-      { title: 'Cognitive Strategy Window', startTime: '08:00', endTime: '10:30', category: 'Work', productivity: 'High', desc: 'Capitalize on early dopamine waves.' },
-      { title: 'Non-Sleep Deep Rest (NSDR)', startTime: '13:00', endTime: '13:30', category: 'Mind', productivity: 'Low', desc: 'Recharges nervous system reserves.' }
+      { title: 'Outside Sunlight Sync', startTime: '06:00', endTime: '06:15', category: 'Health', productivity: 'High', desc: 'Wakes up your eyes and brain naturally.' },
+      { title: 'Deep Focus Space', startTime: '08:00', endTime: '10:30', category: 'Work', productivity: 'High', desc: 'Focus on your hardest task while your brain is fresh.' },
+      { title: 'Relaxation Break', startTime: '13:00', endTime: '13:30', category: 'Mind', productivity: 'Low', desc: 'A quick 20-30 min pause to recharge your battery.' }
     ]
   },
   {
     id: 'tmpl2',
     name: 'Deep Work Specialist',
-    desc: 'Structured to defend high attention blocks with integrated strategic mental rest gaps.',
+    desc: 'Designed to help you focus deeply for longer without burning out.',
     category: 'Productivity',
     blocks: [
-      { title: 'Clean Architecture Planning', startTime: '08:30', endTime: '09:00', category: 'Work', productivity: 'Medium', desc: 'Isolate key goals.' },
-      { title: 'Deep Concentration Loop I', startTime: '09:00', endTime: '11:30', category: 'Work', productivity: 'High', desc: 'Uninterrupted creative space.' },
-      { title: 'Active Physical Recovery', startTime: '12:00', endTime: '13:00', category: 'Health', productivity: 'Low', desc: 'Full attention network rest.' }
+      { title: 'Daily Planning', startTime: '08:30', endTime: '09:00', category: 'Work', productivity: 'Medium', desc: 'List out what you want to achieve today.' },
+      { title: 'Uninterrupted Focus Session', startTime: '09:00', endTime: '11:30', category: 'Work', productivity: 'High', desc: 'Turn off phone and dive into creative or code work.' },
+      { title: 'Move & Stretch', startTime: '12:00', endTime: '13:00', category: 'Health', productivity: 'Low', desc: 'Get up, walk around, grab water, let your mind rest.' }
     ]
   }
 ];
@@ -35,8 +35,8 @@ export const LibraryView: React.FC<LibraryViewProps> = ({ handleImportTemplate }
   return (
     <div className="space-y-6 max-w-6xl mx-auto animate-page">
       <div>
-        <h2 className="text-2xl font-black text-slate-900 tracking-tight">Circadian Routine Blueprints</h2>
-        <p className="text-xs text-slate-500 mt-0.5">Boot up pre-configured, peer-reviewed routine structures to calibrating energy pathways instantly.</p>
+        <h2 className="text-2xl font-black text-slate-900 tracking-tight">Routine Blueprints</h2>
+        <p className="text-xs text-slate-500 mt-0.5">Start with pre-made, easy-to-follow routines to structure your day for key focus and healthy habits.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -47,7 +47,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({ handleImportTemplate }
                 <span className="text-[10px] font-bold uppercase bg-indigo-50 border border-indigo-100 text-indigo-700 px-2 py-0.5 rounded tracking-wider">
                   {tmpl.category}
                 </span>
-                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider font-mono">Scientific Blueprint</span>
+                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider font-mono">Routine Template</span>
               </div>
 
               <div>
@@ -72,7 +72,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({ handleImportTemplate }
               onClick={() => handleImportTemplate(tmpl)}
               className="mt-6 w-full flex items-center justify-center gap-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white py-3 text-xs font-bold transition-all shadow shadow-indigo-100 cursor-pointer"
             >
-              <span>Import & Calibrate Schedule</span>
+              <span>Import & Use This Routine</span>
               <BookOpen className="w-4 h-4 text-white" />
             </button>
           </div>

@@ -43,13 +43,13 @@ const STARTER_PROMPTS = [
     tag: "Identity"
   },
   {
-    title: "Analyze My Trackers",
-    prompt: "Analyze my current AeroFlow dashboard (habits, tasks, and schedules) and give me a strict, scientifically backed feedback report.",
+    title: "Analyze My Routine",
+    prompt: "Check out my current habits, tasks, and schedule and tell me how I can improve my daily routine.",
     tag: "Diagnostic"
   },
   {
-    title: "Circadian Work Block Setup",
-    prompt: "Show me how to structure high-impact focus workflow blocks for maximum cognitive output during cortisol peaks.",
+    title: "Smart Focus Scheduling",
+    prompt: "How can I organize my focus slots to get the most done when my brain is fresh?",
     tag: "Time-Block"
   }
 ];
@@ -73,7 +73,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
       {
         id: 'welcome',
         role: 'assistant',
-        text: "Greetings, Circadian Engineer. I am **AeroBot AI**, your biological routine architect. \n\nI have scanned your active workspace state map. Ask me how to optimize your daylight intervals, anchor atomic identities, or construct high-impact focus workflows. How shall we structure your biology today?",
+        text: "Hi! I'm **AeroBot AI**, your friendly routine coach. \n\nI've looked over your active habits, tasks, and schedule. Ask me how to schedule your morning sunlight, connect your daily habits to who you want to be, or set up distraction-free focus slots. How can I help you organize your day today?",
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }
     ];
@@ -380,7 +380,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
           >
             <input 
               type="text"
-              placeholder={isLoading ? "Please wait..." : "Ask AeroBot AI to optimize your circadian lifestyle..."}
+              placeholder={isLoading ? "Please wait..." : "Ask AeroBot AI to help with your daily routine..."}
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               disabled={isLoading}

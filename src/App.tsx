@@ -40,16 +40,16 @@ const DEFAULT_IDENTITIES: IdentityCheck[] = [
 ];
 
 const DEFAULT_TASKS: Task[] = [
-  { id: 't1', text: 'Define Core Application State Maps', category: 'Work', completed: false, priority: 'High', pomodoros: 3, completedPomodoros: 0 },
-  { id: 't2', text: 'Perform Hydration Intake System Sweep', category: 'Health', completed: false, priority: 'Medium', pomodoros: 1, completedPomodoros: 0 },
-  { id: 't3', text: 'Cleanse Workspace Desk Layout', category: 'Mind', completed: false, priority: 'Low', pomodoros: 1, completedPomodoros: 0 }
+  { id: 't1', text: 'Outline daily goals and easy steps', category: 'Work', completed: false, priority: 'High', pomodoros: 3, completedPomodoros: 0 },
+  { id: 't2', text: 'Drink a glass of water', category: 'Health', completed: false, priority: 'Medium', pomodoros: 1, completedPomodoros: 0 },
+  { id: 't3', text: 'Tidy up and organize my work desk', category: 'Mind', completed: false, priority: 'Low', pomodoros: 1, completedPomodoros: 0 }
 ];
 
 const DEFAULT_SCHEDULE: ScheduleBlock[] = [
-  { id: 's1', title: 'Awakening & Sunlight Exposure', startTime: '06:30', endTime: '07:30', category: 'Health', productivity: 'Medium', desc: 'Step outdoors immediately to lock sleep-wake schedules.' },
-  { id: 's2', title: 'System-Critical Coding Flow', startTime: '08:30', endTime: '11:00', category: 'Work', productivity: 'High', desc: 'Protect early cognitive energy from message feeds.' },
-  { id: 's3', title: 'Post-Lunch Restorative Walk', startTime: '12:30', endTime: '13:15', category: 'Mind', productivity: 'Low', desc: 'No-input natural recovery phase.' },
-  { id: 's4', title: 'Collaboration & Group Alignment', startTime: '14:00', endTime: '16:00', category: 'Work', productivity: 'Medium', desc: 'Answer messages, run reviews, clear inbox layers.' }
+  { id: 's1', title: 'Morning Light & Fresh Air', startTime: '06:30', endTime: '07:30', category: 'Health', productivity: 'Medium', desc: 'Get some morning sunlight outdoors to wake up naturally!' },
+  { id: 's2', title: 'Deep Work Focus Time', startTime: '08:30', endTime: '11:00', category: 'Work', productivity: 'High', desc: 'Focus on your hardest tasks before checking emails.' },
+  { id: 's3', title: 'Afternoon Walking Break', startTime: '12:30', endTime: '13:15', category: 'Mind', productivity: 'Low', desc: 'Stretch, walk, and rest your eyes outside.' },
+  { id: 's4', title: 'Meetings & Organization', startTime: '14:00', endTime: '16:00', category: 'Work', productivity: 'Medium', desc: 'Reply to messages, check emails, and clear backlog.' }
 ];
 
 export default function App() {
@@ -434,8 +434,8 @@ export default function App() {
 
     if (workBlocksCount >= 3 && healthBlocksCount < 2) {
       s.push({
-        title: 'Intense Cognitive Saturation Alert',
-        desc: 'Your routine outlines high mental output without corresponding micro-movement buffers. Integrate an active restoration zone.',
+        title: 'Busy Mind Warning',
+        desc: 'You have a lot of work blocks planned and not enough breaks. Consider adding a quick stroll or physical recovery break to recharge!',
         color: 'border-amber-500/50 bg-amber-500/5'
       });
     }
@@ -443,16 +443,16 @@ export default function App() {
     const hasSunlight = scheduleBlocks.some(b => b.title.toLowerCase().includes('sunlight'));
     if (!hasSunlight) {
       s.push({
-        title: 'Missing Morning Photons',
-        desc: 'No outdoor light anchoring observed. Catching morning sunlight calibrates systemic cellular clocks and optimizes energy curves.',
+        title: 'Add Some Morning Sun',
+        desc: "You're missing a morning sunshine break. Stepping outside in the morning sunlight is the easiest way to naturally boost your energy.",
         color: 'border-blue-500/50 bg-blue-500/5'
       });
     }
 
     if (s.length === 0) {
       s.push({
-        title: 'Circadian Alignment Secured',
-        desc: 'Outstanding balance. Active work, deep mental recovery windows, and physical parameters are perfectly configured.',
+        title: 'Routine Looking Great!',
+        desc: 'Great balance! You have planned focus times, healthy breaks, and habit intervals set up perfectly.',
         color: 'border-emerald-500/50 bg-emerald-500/5'
       });
     }
@@ -730,18 +730,18 @@ export default function App() {
               </h2>
               
               <p className="text-xs text-slate-500 leading-relaxed max-w-sm mb-6">
-                Your biological routine architect is calibrated and live. Prepare to align systemic cellular clocks, defend cognitive workflow peaks, and secure your circadian lock with scientific precision.
+                Your daily routine companion is loaded and ready. Let's make it easy to follow healthy morning habits, stay deeply focused on your work, and organize your day beautifully.
               </p>
 
               {/* Minimal informative tags inside modal */}
               <div className="w-full bg-slate-50 rounded-xl p-3 mb-6 border border-slate-150/50 text-left space-y-2">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                  <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Circadian Lock Alignment</span>
+                  <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Healthy Habit Tracking</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
-                  <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">AeroBot AI Companion Live</span>
+                  <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">AeroBot AI Routine Coach Live</span>
                 </div>
               </div>
 
