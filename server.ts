@@ -8,9 +8,9 @@ import AdmZip from "adm-zip";
 // Create lazy loaded Gemini client
 let aiClient: GoogleGenAI | null = null;
 function getGeminiClient(): GoogleGenAI {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY2 || process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    throw new Error("GEMINI_API_KEY environment variable is not set. Please add it via Settings > Secrets.");
+    throw new Error("GEMINI_API_KEY2 or GEMINI_API_KEY environment variable is not set. Please add it via Settings > Secrets.");
   }
   if (!aiClient) {
     aiClient = new GoogleGenAI({
@@ -129,10 +129,10 @@ async function startServer() {
       res.json({ text: replyText });
     } catch (error: any) {
       console.error("AeroBot Error:", error);
-      const isMissingKey = error.message && error.message.includes("GEMINI_API_KEY");
+      const isMissingKey = error.message && (error.message.includes("GEMINI_API_KEY") || error.message.includes("GEMINI_API_KEY2"));
       res.status(500).json({ 
         error: isMissingKey 
-          ? "AeroBot needs an active API Key. Please make sure to add your GEMINI_API_KEY in the Settings > Secrets configuration panel." 
+          ? "AeroBot needs an active API Key. Please make sure to add your GEMINI_API_KEY or GEMINI_API_KEY2 in the Settings > Secrets configuration panel." 
           : "An error occurred while connecting with AeroBot: " + error.message 
       });
     }

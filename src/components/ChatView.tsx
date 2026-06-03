@@ -327,7 +327,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
                 </div>
               </div>
               <div className="text-[10px] bg-white border border-rose-100 rounded-lg p-2.5 text-slate-500 leading-normal">
-                💡 <strong>How to configure your API Key:</strong> Open the <strong>Settings (Gear Icon)</strong> menu in the upper corner of the AI Studio workspace, choose <strong>Secrets</strong>, and insert a valid <code>GEMINI_API_KEY</code>. Once saved, AeroBot will establish communication immediately!
+                💡 <strong>How to configure your API Key:</strong> Open the <strong>Settings (Gear Icon)</strong> menu in the upper corner of the AI Studio workspace, choose <strong>Secrets</strong>, and insert a valid <code>GEMINI_API_KEY</code> (or <code>GEMINI_API_KEY2</code>). Once saved, AeroBot will establish communication immediately!
               </div>
             </div>
           )}

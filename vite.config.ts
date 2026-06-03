@@ -12,7 +12,7 @@ export default defineConfig(() => {
       },
     },
     define: {
-      __GEMINI_API_KEY__: JSON.stringify(process.env.GEMINI_API_KEY || ""),
+      __GEMINI_API_KEY__: JSON.stringify(process.env.GEMINI_API_KEY2 || process.env.GEMINI_API_KEY || ""),
     },
     server: {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
