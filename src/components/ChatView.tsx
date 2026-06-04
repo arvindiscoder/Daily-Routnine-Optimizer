@@ -9,7 +9,10 @@ import {
   Zap,
   ArrowRight,
   HelpCircle,
-  Clock
+  Clock,
+  Settings,
+  Wifi,
+  Globe
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { Habit, Task, ScheduleBlock, IdentityCheck } from '../types';
@@ -82,6 +85,11 @@ export const ChatView: React.FC<ChatViewProps> = ({
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorText, setErrorText] = useState<string | null>(null);
+  
+  const [showSettings, setShowSettings] = useState(false);
+  const [customApiUrl, setCustomApiUrl] = useState(() => localStorage.getItem("AEROFLOW_API_URL") || "");
+  const [directClientKey, setDirectClientKey] = useState(() => localStorage.getItem("GEMINI_API_KEY_CLIENT") || "");
+  const [saveSuccess, setSaveSuccess] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -192,6 +200,36 @@ export const ChatView: React.FC<ChatViewProps> = ({
     }
   };
 
+  const handleSaveSettings = (e: React.FormEvent) => {
+    e.preventDefault();
+    SoundSynth.playSuccess();
+    
+    if (customApiUrl.trim()) {
+      localStorage.setItem("AEROFLOW_API_URL", customApiUrl.trim());
+    } else {
+      localStorage.removeItem("AEROFLOW_API_URL");
+    }
+    
+    if (directClientKey.trim()) {
+      localStorage.setItem("GEMINI_API_KEY_CLIENT", directClientKey.trim());
+    } else {
+      localStorage.removeItem("GEMINI_API_KEY_CLIENT");
+    }
+    
+    setSaveSuccess(true);
+    setTimeout(() => setSaveSuccess(false), 3000);
+  };
+
+  const handleResetSettings = () => {
+    SoundSynth.playAlert();
+    localStorage.removeItem("AEROFLOW_API_URL");
+    localStorage.removeItem("GEMINI_API_KEY_CLIENT");
+    setCustomApiUrl("");
+    setDirectClientKey("");
+    setSaveSuccess(true);
+    setTimeout(() => setSaveSuccess(false), 3000);
+  };
+
   const handleClearChat = () => {
     SoundSynth.playAlert();
     if (window.confirm("Do you want to clear your current conversation history with AeroBot?")) {
@@ -227,13 +265,122 @@ export const ChatView: React.FC<ChatViewProps> = ({
           </div>
         </div>
 
-        <button 
-          onClick={handleClearChat}
-          className="text-xs font-semibold px-3 py-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 border border-slate-200/60 rounded-lg transition-all cursor-pointer"
-        >
-          Clear History
-        </button>
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={() => { SoundSynth.playTick(); setShowSettings(!showSettings); }}
+            className={`text-xs font-semibold px-3 py-1.5 flex items-center gap-1.5 border rounded-lg transition-all cursor-pointer ${
+              showSettings 
+              ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm' 
+              : 'text-slate-500 hover:text-indigo-600 hover:bg-slate-50 border-slate-200/60'
+            }`}
+          >
+            <Settings className="w-3.5 h-3.5" />
+            <span>Connection & Android Sync</span>
+          </button>
+          
+          <button 
+            onClick={handleClearChat}
+            className="text-xs font-semibold px-3 py-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 border border-slate-200/60 rounded-lg transition-all cursor-pointer"
+          >
+            Clear History
+          </button>
+        </div>
       </div>
+
+      {/* Advanced Connection & Sync Configuration Panel */}
+      {showSettings && (
+        <div className="bg-white border-b border-slate-200 p-5 px-6 shrink-0 shadow-sm transition-all">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4 pb-3 border-b border-slate-100">
+              <div>
+                <h3 className="text-xs font-black text-indigo-950 flex items-center gap-1.5 uppercase tracking-wider">
+                  <Wifi className="w-4 h-4 text-indigo-600" />
+                  AeroBot Connectivity & Android Synchronization
+                </h3>
+                <p className="text-[10px] text-slate-500 font-medium mt-0.5">
+                  Configure direct client-side fallback keys or redirect native requests to secure deployed API gateways on Android.
+                </p>
+              </div>
+              
+              <div className="flex items-center gap-1.5 select-none self-start">
+                <span className="text-[8px] font-bold text-slate-400 uppercase">Detection Mode:</span>
+                {hasDirectClientKey() ? (
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-700 border border-amber-500/15 text-[8px] font-black uppercase">
+                    direct client key ACTIVE
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-700 border border-indigo-500/15 text-[8px] font-black uppercase">
+                    SERVER-SIDE ROUTE ACTIVE
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <form onSubmit={handleSaveSettings} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Custom API URL input */}
+                <div className="space-y-1">
+                  <label className="block text-[9px] font-bold text-slate-600 uppercase tracking-wide flex items-center gap-1">
+                    <Globe className="w-3.5 h-3.5 text-slate-400" />
+                    Custom Server API Endpoint (Advanced / Android)
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="e.g. https://ais-pre-m44ow4ss2wumsirjm4g6tf-345839305767.us-west1.run.app"
+                    value={customApiUrl}
+                    onChange={(e) => setCustomApiUrl(e.target.value)}
+                    className="w-full text-xs rounded-lg border border-slate-200 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-600 bg-slate-50 focus:bg-white transition-all font-mono"
+                  />
+                  <p className="text-[9px] text-slate-400 leading-normal">
+                    By default, Capacitor routes native requests to the deployed Cloud Run server. Paste your custom service URL here if you deploy to a fresh Cloud Run instance.
+                  </p>
+                </div>
+
+                {/* Direct Client API Key */}
+                <div className="space-y-1">
+                  <label className="block text-[9px] font-bold text-slate-600 uppercase tracking-wide">
+                    🗝️ Direct Gemini Client API Key (Optional local test option)
+                  </label>
+                  <input
+                    type="password"
+                    placeholder="Enter GEMINI_API_KEY for direct client-side device queries"
+                    value={directClientKey}
+                    onChange={(e) => setDirectClientKey(e.target.value)}
+                    className="w-full text-xs rounded-lg border border-slate-200 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-600 bg-slate-50 focus:bg-white transition-all font-mono"
+                  />
+                  <p className="text-[9px] text-slate-400 leading-normal">
+                    Optionally paste your custom Gemini key here if you need to test direct client-side execution path directly on the device without any server round-trips.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-3 pt-1">
+                <div className="flex items-center gap-2">
+                  <button
+                    type="submit"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[9px] rounded px-4 py-2 uppercase tracking-wider shadow-sm transition-colors cursor-pointer"
+                  >
+                    Save Settings
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleResetSettings}
+                    className="bg-slate-100 hover:bg-slate-200 text-slate-755 font-bold text-[9px] rounded px-4 py-2 uppercase tracking-wider transition-colors cursor-pointer border border-slate-200"
+                  >
+                    Reset Defaults
+                  </button>
+                </div>
+
+                {saveSuccess && (
+                  <span className="text-[9px] font-bold text-emerald-600 flex items-center gap-1 animate-pulse">
+                    ✅ Configuration saved successfully!
+                  </span>
+                )}
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Messages Thread Workspace */}
       <div className="flex-1 overflow-y-auto p-6 space-y-5">

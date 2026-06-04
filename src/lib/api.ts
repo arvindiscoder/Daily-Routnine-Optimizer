@@ -4,13 +4,20 @@
  * to the deployed hosted Cloud Run backend. Otherwise, it uses relative paths.
  */
 export function getApiUrl(path: string): string {
+  // Allow overriding the API endpoint via localStorage for native testing or deployment configuration
+  const customUrl = typeof window !== 'undefined' ? localStorage.getItem("AEROFLOW_API_URL") : null;
+  if (customUrl) {
+    const cleanBaseURL = customUrl.endsWith("/") ? customUrl.slice(0, -1) : customUrl;
+    return `${cleanBaseURL}${path.startsWith("/") ? "" : "/"}${path}`;
+  }
+
   const origin = window.location.origin;
 
   // Detect Capacitor native platform environments (which serve on localhost with port !== 3000,
   // or use capacitor://localhost or file:// protocol)
   const isCapacitorNative =
     origin.startsWith("capacitor://") ||
-    (origin.includes("localhost") && window.location.port !== "3000") ||
+    (origin.includes("localhost") && window.location.port !== "3000" && window.location.port !== "5173") ||
     origin.startsWith("file://");
 
   if (isCapacitorNative) {
